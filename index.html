@@ -9,7 +9,7 @@
     <style>
         :root { --bg: #080808; --card: #141414; --text: #ffffff; --border: #222; --primary: #00dc82; --error: #ff4d4d; }
         body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .container { background: var(--card); padding: 30px; border-radius: 24px; width: 720px; border: 1px solid var(--border); position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .container { background: var(--card); padding: 30px; border-radius: 24px; width: 750px; border: 1px solid var(--border); position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
         .pro-label { position: absolute; top: 25px; right: 25px; font-size: 10px; font-weight: 900; color: var(--primary); border: 1.5px solid var(--primary); padding: 3px 10px; border-radius: 6px; letter-spacing: 2px; }
         
         .step { display: none; }
@@ -19,23 +19,24 @@
         .upload-box:hover { border-color: var(--primary); background: #1a1a1a; }
 
         #fileList { max-height: 350px; overflow-y: auto; margin: 20px 0; border-radius: 12px; border: 1px solid #222; background: #0a0a0a; }
-        .file-row { display: grid; grid-template-columns: 1.5fr 1fr 80px 40px; gap: 12px; align-items: center; padding: 12px; border-bottom: 1px solid #222; }
+        .file-row { display: grid; grid-template-columns: 1.2fr 80px 1fr 80px 40px; gap: 12px; align-items: center; padding: 12px; border-bottom: 1px solid #222; }
         
         select, input[type="text"], button { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); font-size: 13px; outline: none; background: #1a1a1a; color: white; box-sizing: border-box; }
         button { background: var(--primary); color: black; font-weight: bold; cursor: pointer; border: none; transition: 0.2s; }
-        button:disabled { opacity: 0.4; }
+        button:disabled { opacity: 0.4; cursor: not-allowed; }
 
+        .source-badge { font-size: 9px; background: #222; color: #888; padding: 4px 6px; border-radius: 4px; text-align: center; font-weight: bold; border: 1px solid #333; }
         .btn-remove { background: rgba(255, 77, 77, 0.1); color: var(--error); border: 1px solid var(--error); cursor: pointer; font-weight: bold; }
         .btn-remove:hover { background: var(--error); color: white; }
 
         .batch-header { background: #1a1a1a; padding: 15px; border-radius: 12px; border: 1px solid #333; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .batch-footer { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .batch-footer { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 10px; margin-top: 15px; }
         
         .checkbox-group { display: flex; gap: 20px; margin: 10px 0; font-size: 12px; color: #888; }
         .checkbox-group input { accent-color: var(--primary); }
 
         .progress-wrapper { margin-top: 20px; display: none; }
-        .progress-bar { width: 0%; height: 6px; background: var(--primary); transition: 0.3s; border-radius: 10px; box-shadow: 0 0 10px var(--primary); }
+        .progress-bar { width: 0%; height: 6px; background: var(--primary); transition: 0.1s linear; border-radius: 10px; box-shadow: 0 0 10px var(--primary); }
     </style>
 </head>
 <body>
@@ -69,18 +70,18 @@
         <div id="fileList"></div>
 
         <div class="checkbox-group">
-            <label><input type="checkbox" id="zipMode"> Bundle as .ZIP</label>
-            <label><input type="checkbox" id="folderMode"> Preserve Folder Structure</label>
+            <label title="Downloads one ZIP instead of many files"><input type="checkbox" id="zipMode"> Bundle as .ZIP</label>
+            <label><input type="checkbox" id="folderMode"> Folder Mode</label>
         </div>
 
         <div class="progress-wrapper" id="progWrapper">
-            <div id="statusMsg" style="font-size: 11px; text-align: center; margin-bottom: 5px; color: var(--primary);">Initialising...</div>
+            <div id="statusMsg" style="font-size: 11px; text-align: center; margin-bottom: 5px; color: var(--primary);">Initialising FFmpeg Core...</div>
             <div style="background:#222; border-radius: 10px;"><div class="progress-bar" id="progBar"></div></div>
         </div>
 
         <div class="batch-footer">
-            <button id="startBtn">CONVERT & DOWNLOAD ALL</button>
-            <button onclick="location.reload()" style="background:none; color:#555; border:1px solid #333;">CANCEL ALL</button>
+            <button id="startBtn">START BATCH CONVERSION</button>
+            <button onclick="location.reload()" style="background:none; color:#555; border:1px solid #333;">CANCEL</button>
         </div>
     </div>
 </div>
@@ -89,6 +90,7 @@
     const { createFFmpeg, fetchFile } = FFmpeg;
     const ffmpeg = createFFmpeg({ log: false });
     let queue = [];
+    let currentFileRatio = 0;
 
     const formatData = {
         common: ['mp4', 'mp3', 'png', 'jpg', 'gif', 'webp'],
@@ -111,11 +113,13 @@
     document.getElementById('fileInput').addEventListener('change', (e) => {
         const files = Array.from(e.target.files);
         files.forEach((file, idx) => {
+            const ext = file.name.split('.').pop().toUpperCase();
             queue.push({
                 file,
                 id: Date.now() + idx + Math.random(),
                 newName: file.name.replace(/\.[^/.]+$/, ""),
-                format: 'mp4'
+                format: 'mp4',
+                sourceExt: ext
             });
         });
         document.getElementById('step1').classList.remove('active');
@@ -133,10 +137,11 @@
             return `
             <div class="file-row">
                 <input type="text" value="${item.newName}" oninput="updateItem(${item.id}, 'newName', this.value)">
+                <div class="source-badge">FROM ${item.sourceExt}</div>
                 <select onchange="updateIndividualFormat(${item.id}, this.value)" class="row-format">
                     ${generateOptionsHTML().replace(`value="${item.format}"`, `value="${item.format}" selected`)}
                 </select>
-                <span style="font-size:11px; color:#555;">${(item.file.size/1024/1024).toFixed(1)}MB</span>
+                <span style="font-size:11px; color:#555; text-align:right;">${(item.file.size/1024/1024).toFixed(1)} MB</span>
                 <button class="btn-remove" onclick="removeItem(${item.id})">×</button>
             </div>`;
         }).join('');
@@ -172,13 +177,31 @@
 
         if (!ffmpeg.isLoaded()) await ffmpeg.load();
 
-        for (let i = 0; i < queue.length; i++) {
-            const item = queue[i];
+        // Fluid Progress Hook
+        ffmpeg.setProgress(({ ratio }) => {
+            currentFileRatio = ratio;
+            updateProgressBar(currentIdx);
+        });
+
+        let currentIdx = 0;
+        for (currentIdx = 0; currentIdx < queue.length; currentIdx++) {
+            const item = queue[currentIdx];
             const outName = `${item.newName}.${item.format}`;
-            document.getElementById('statusMsg').innerText = `Converting (${i+1}/${queue.length}): ${item.file.name}`;
+            document.getElementById('statusMsg').innerText = `Step ${currentIdx+1}/${queue.length}: Processing ${item.file.name}...`;
             
+            // Memory Management: Clear FS before writing new large file
+            try { ffmpeg.FS('unlink', item.file.name); } catch(e){}
+
             ffmpeg.FS('writeFile', item.file.name, await fetchFile(item.file));
-            await ffmpeg.run('-threads', '4', '-i', item.file.name, outName);
+            
+            // OOM Prevention: Use slower but safer memory profile for large files
+            const isLarge = item.file.size > 200 * 1024 * 1024;
+            const args = isLarge 
+                ? ['-i', item.file.name, '-preset', 'ultrafast', '-threads', '2', outName]
+                : ['-threads', '4', '-i', item.file.name, outName];
+
+            await ffmpeg.run(...args);
+            
             const data = ffmpeg.FS('readFile', outName);
             
             if (useZip) {
@@ -187,12 +210,13 @@
                 download(data, outName);
             }
 
+            // Forced Garbage Collection
             ffmpeg.FS('unlink', item.file.name);
             ffmpeg.FS('unlink', outName);
-            document.getElementById('progBar').style.width = ((i+1)/queue.length * 100) + '%';
         }
 
         if (useZip) {
+            document.getElementById('statusMsg').innerText = "Bundling ZIP...";
             const content = await zip.generateAsync({type:"blob"});
             download(content, "TurboBatch_Pro.zip");
         }
@@ -201,12 +225,23 @@
         document.getElementById('startBtn').disabled = false;
     }
 
+    function updateProgressBar(idx) {
+        // Math: (Completed Files / Total) + (Current File Progress / Total)
+        const totalFiles = queue.length;
+        const baseProgress = (idx / totalFiles) * 100;
+        const currentFileProgress = (currentFileRatio / totalFiles) * 100;
+        const finalWidth = baseProgress + currentFileProgress;
+        document.getElementById('progBar').style.width = finalWidth + '%';
+    }
+
     function download(data, name) {
         const blob = new Blob([data.buffer || data]);
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url; a.download = name; a.click();
-        URL.revokeObjectURL(url);
+        
+        // Memory Fix: Immediately free the Blob URL from browser RAM
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
     }
 
     document.getElementById('startBtn').onclick = startConversion;
