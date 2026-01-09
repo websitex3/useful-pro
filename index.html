@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TurboConvert PRO | Unlocked</title>
+    <title>TurboConvert PRO</title>
     <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.0/dist/ffmpeg.min.js"></script>
     <style>
         :root { --bg: #ffffff; --card: #f8fafc; --text: #0f172a; --border: #e2e8f0; --primary: #00dc82; }
@@ -33,54 +33,69 @@
         .progress-bar { width: 0%; height: 100%; background: var(--primary); transition: 0.2s; box-shadow: 0 0 10px var(--primary); }
         
         .theme-toggle { position: absolute; top: 20px; left: 20px; cursor: pointer; font-size: 20px; opacity: 0.6; transition: 0.3s; }
-        .theme-toggle:hover { opacity: 1; }
+        .pro-label { position: absolute; top: 24px; right: 24px; font-size: 10px; font-weight: 900; color: var(--primary); letter-spacing: 2px; border: 1.5px solid var(--primary); padding: 3px 10px; border-radius: 6px; text-transform: uppercase; }
         
         #warningBox { display: none; color: #fbbf24; background: rgba(251, 191, 36, 0.1); padding: 12px; border-radius: 10px; font-size: 12px; border: 1px solid #fbbf24; margin-bottom: 15px; text-align: left; }
-        .pro-label { position: absolute; top: 20px; right: 20px; font-size: 10px; font-weight: 800; color: var(--primary); letter-spacing: 1px; border: 1px solid var(--primary); padding: 2px 8px; border-radius: 4px; }
     </style>
 </head>
-<body class="dark-theme"> <div class="container">
+<body class="dark-theme">
+
+<div class="container">
     <div class="theme-toggle" onclick="toggleTheme()">🌓</div>
-    <div class="pro-label">PRO UNLOCKED</div>
+    <div class="pro-label">PRO</div>
 
     <div id="step1" class="step active">
-        <h2 style="margin-top:0">TurboConvert PRO</h2>
+        <h2 style="margin-top:0">TurboConvert</h2>
         <div class="upload-box" onclick="document.getElementById('fileInput').click()">
             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#00dc82" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            <p>Drop file to process</p>
+            <p>Select or Drag File</p>
             <input type="file" id="fileInput" style="display:none">
         </div>
-        <p style="font-size: 11px; opacity: 0.5; margin-top: 20px;">Multithreaded Local Conversion</p>
+        <p style="font-size: 11px; opacity: 0.4; margin-top: 20px;">Private Local Processing Engine</p>
     </div>
 
     <div id="step2" class="step">
-        <h3 id="displayFileName" style="margin: 0 0 10px 0; font-size: 18px;">File Name</h3>
+        <h3 id="displayFileName" style="margin: 0 0 10px 0; font-size: 18px; color: var(--primary);">File Name</h3>
         
         <div class="stats-grid">
             <div class="stat-item"><b>Size:</b> <span id="statSize">-</span></div>
-            <div class="stat-item"><b>Format:</b> <span id="statType">-</span></div>
+            <div class="stat-item"><b>Source:</b> <span id="statType">-</span></div>
         </div>
 
         <div id="warningBox"></div>
 
         <div style="text-align: left;">
-            <label style="font-size: 11px; font-weight: bold; opacity: 0.6;">NEW FILE NAME</label>
-            <input type="text" id="newFileName" placeholder="Filename">
+            <label style="font-size: 11px; font-weight: bold; opacity: 0.5;">FILE NAME</label>
+            <input type="text" id="newFileName" placeholder="Rename your file">
             
-            <label style="font-size: 11px; font-weight: bold; opacity: 0.6; margin-top: 15px; display: block;">TARGET FORMAT</label>
+            <label style="font-size: 11px; font-weight: bold; opacity: 0.5; margin-top: 15px; display: block;">OUTPUT FORMAT</label>
             <select id="targetFormat">
-                <optgroup label="Video/Animation">
+                <optgroup label="Common">
                     <option value="mp4">MP4 Video</option>
-                    <option value="gif">GIF Animation</option>
-                </optgroup>
-                <optgroup label="Audio">
                     <option value="mp3">MP3 Audio</option>
-                    <option value="wav">WAV Lossless</option>
-                </optgroup>
-                <optgroup label="Images">
                     <option value="png">PNG Image</option>
                     <option value="jpg">JPG Image</option>
-                    <option value="webp">WebP Image</option>
+                    <option value="gif">GIF Animation</option>
+                </optgroup>
+                <optgroup label="Advanced Video">
+                    <option value="mov">MOV (QuickTime)</option>
+                    <option value="avi">AVI Video</option>
+                    <option value="mkv">MKV Video</option>
+                    <option value="webm">WebM (VP9)</option>
+                    <option value="flv">FLV Video</option>
+                </optgroup>
+                <optgroup label="Advanced Audio">
+                    <option value="flac">FLAC (Lossless)</option>
+                    <option value="wav">WAV (Uncompressed)</option>
+                    <option value="m4a">M4A Audio</option>
+                    <option value="ogg">OGG Vorbis</option>
+                    <option value="aac">AAC Audio</option>
+                </optgroup>
+                <optgroup label="Advanced Image">
+                    <option value="webp">WebP Next-Gen</option>
+                    <option value="ico">ICO (Favicon)</option>
+                    <option value="bmp">BMP (Bitmap)</option>
+                    <option value="tiff">TIFF Image</option>
                 </optgroup>
             </select>
         </div>
@@ -89,8 +104,8 @@
             <div class="progress-bar" id="progBar"></div>
         </div>
 
-        <button id="convertBtn">Convert Now</button>
-        <button onclick="location.reload()" style="background:none; color:gray; font-size:12px; margin-top: 10px; border: none;">← Back</button>
+        <button id="convertBtn">Convert File</button>
+        <button onclick="location.reload()" style="background:none; color:gray; font-size:12px; margin-top: 10px; border: none;">Cancel</button>
     </div>
 </div>
 
@@ -99,46 +114,39 @@
     const ffmpeg = createFFmpeg({ log: false });
     let selectedFile = null;
 
-    // Theme Switcher
     function toggleTheme() {
         document.body.classList.toggle('dark-theme');
     }
 
-    // Load FFmpeg
     (async () => {
         try { if (!ffmpeg.isLoaded()) await ffmpeg.load(); } 
-        catch (e) { console.error(e); }
+        catch (e) { console.error("FFmpeg Core Error", e); }
     })();
 
-    // File Selection logic
     document.getElementById('fileInput').addEventListener('change', (e) => {
         selectedFile = e.target.files[0];
         if (selectedFile) {
             document.getElementById('step1').classList.remove('active');
             document.getElementById('step2').classList.add('active');
             
-            // Info Display
             document.getElementById('displayFileName').innerText = selectedFile.name;
             document.getElementById('statSize').innerText = (selectedFile.size / (1024*1024)).toFixed(2) + " MB";
             document.getElementById('statType').innerText = selectedFile.name.split('.').pop().toUpperCase();
             
-            // Pre-fill Rename Box (strips old extension)
             const baseName = selectedFile.name.replace(/\.[^/.]+$/, "");
-            document.getElementById('newFileName').value = baseName + "_turbo";
+            document.getElementById('newFileName').value = baseName + "_pro";
 
-            if (selectedFile.size > 200 * 1024 * 1024) {
-                const warn = document.getElementById('warningBox');
-                warn.style.display = 'block';
-                warn.innerText = "⚠️ Large file detected. CPU multithreading enabled for speed.";
+            if (selectedFile.size > 150 * 1024 * 1024) {
+                document.getElementById('warningBox').style.display = 'block';
+                document.getElementById('warningBox').innerText = "⚠️ Large file detected. Turbo multithreading is active.";
             }
         }
     });
 
-    // Main Conversion Engine
     document.getElementById('convertBtn').addEventListener('click', async () => {
         const target = document.getElementById('targetFormat').value;
-        const customName = document.getElementById('newFileName').value || "converted";
-        const finalFullName = `${customName}.${target}`;
+        const customName = document.getElementById('newFileName').value || "pro_export";
+        const finalName = `${customName}.${target}`;
         
         document.getElementById('progCont').style.display = 'block';
         document.getElementById('convertBtn').disabled = true;
@@ -150,27 +158,24 @@
         });
 
         const inName = selectedFile.name;
-        
-        // Write to Virtual RAM
         ffmpeg.FS('writeFile', inName, await fetchFile(selectedFile));
 
-        // RUN FFMPEG with -threads 4 for PRO speed
-        await ffmpeg.run('-threads', '4', '-i', inName, finalFullName);
+        // PRO: Using -threads 4 for high-speed conversion
+        await ffmpeg.run('-threads', '4', '-i', inName, finalName);
 
-        // Read result and trigger download
-        const data = ffmpeg.FS('readFile', finalFullName);
+        const data = ffmpeg.FS('readFile', finalName);
         const url = URL.createObjectURL(new Blob([data.buffer]));
         
         const a = document.createElement('a');
         a.href = url;
-        a.download = finalFullName;
+        a.download = finalName;
         a.click();
 
-        // CLEANUP RAM IMMEDIATELY
+        // Memory Wipe
         ffmpeg.FS('unlink', inName);
-        ffmpeg.FS('unlink', finalFullName);
+        ffmpeg.FS('unlink', finalName);
         
-        alert("Conversion Successful!");
+        alert("Done! Your PRO file is ready.");
         location.reload();
     });
 </script>
