@@ -3,76 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TurboConvert Pro | Universal Converter</title>
+    <title>TurboConvert PRO | Unlocked</title>
     <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.0/dist/ffmpeg.min.js"></script>
     <style>
         :root { --bg: #ffffff; --card: #f8fafc; --text: #0f172a; --border: #e2e8f0; --primary: #00dc82; }
         .dark-theme { --bg: #080808; --card: #141414; --text: #ffffff; --border: #222222; }
 
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; transition: 0.3s; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; transition: 0.3s ease; }
         .container { background: var(--card); padding: 40px; border-radius: 24px; width: 480px; text-align: center; border: 1px solid var(--border); position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.1); }
         
         .step { display: none; }
         .step.active { display: block; }
 
-        /* UI Components */
-        .upload-box { border: 2px dashed var(--border); padding: 50px 20px; border-radius: 20px; cursor: pointer; transition: 0.3s; }
-        .upload-box:hover { border-color: var(--primary); }
+        .upload-box { border: 2px dashed var(--border); padding: 50px 20px; border-radius: 20px; cursor: pointer; transition: 0.3s; background: rgba(0,0,0,0.02); }
+        .upload-box:hover { border-color: var(--primary); background: rgba(0,220,130,0.05); }
         
-        input[type="text"], select, button { width: 100%; padding: 14px; margin-top: 10px; border-radius: 12px; border: 1px solid var(--border); font-size: 15px; outline: none; box-sizing: border-box; }
+        input[type="text"], select, button { width: 100%; padding: 14px; margin-top: 12px; border-radius: 12px; border: 1px solid var(--border); font-size: 15px; outline: none; box-sizing: border-box; }
         input[type="text"], select { background: var(--bg); color: var(--text); }
         
-        button { background: var(--primary); color: black; font-weight: bold; cursor: pointer; border: none; }
-        button:disabled { opacity: 0.5; }
+        button { background: var(--primary); color: #000; font-weight: bold; cursor: pointer; border: none; transition: 0.2s; }
+        button:hover:not(:disabled) { transform: translateY(-1px); filter: brightness(1.1); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* Info Badge & Stats */
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; text-align: left; font-size: 12px; }
-        .stat-item { background: rgba(0,0,0,0.05); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); }
+        .stat-item { background: rgba(0,0,0,0.03); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); }
         .dark-theme .stat-item { background: rgba(255,255,255,0.05); }
 
-        #proBadge { display: none; position: absolute; top: -10px; right: 20px; background: var(--primary); color: black; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
-
         .progress-container { width: 100%; background: var(--border); height: 8px; border-radius: 10px; margin: 20px 0; overflow: hidden; display: none; }
-        .progress-bar { width: 0%; height: 100%; background: var(--primary); transition: 0.2s; }
+        .progress-bar { width: 0%; height: 100%; background: var(--primary); transition: 0.2s; box-shadow: 0 0 10px var(--primary); }
         
-        .theme-toggle { position: absolute; top: 15px; left: 15px; cursor: pointer; font-size: 18px; opacity: 0.6; }
+        .theme-toggle { position: absolute; top: 20px; left: 20px; cursor: pointer; font-size: 20px; opacity: 0.6; transition: 0.3s; }
+        .theme-toggle:hover { opacity: 1; }
+        
+        #warningBox { display: none; color: #fbbf24; background: rgba(251, 191, 36, 0.1); padding: 12px; border-radius: 10px; font-size: 12px; border: 1px solid #fbbf24; margin-bottom: 15px; text-align: left; }
+        .pro-label { position: absolute; top: 20px; right: 20px; font-size: 10px; font-weight: 800; color: var(--primary); letter-spacing: 1px; border: 1px solid var(--primary); padding: 2px 8px; border-radius: 4px; }
     </style>
 </head>
-<body>
-
-<div class="container">
+<body class="dark-theme"> <div class="container">
     <div class="theme-toggle" onclick="toggleTheme()">🌓</div>
-    <div id="proBadge">PRO</div>
+    <div class="pro-label">PRO UNLOCKED</div>
 
     <div id="step1" class="step active">
-        <h2>TurboConvert</h2>
+        <h2 style="margin-top:0">TurboConvert PRO</h2>
         <div class="upload-box" onclick="document.getElementById('fileInput').click()">
-            <p>Select File to Start</p>
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#00dc82" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <p>Drop file to process</p>
             <input type="file" id="fileInput" style="display:none">
         </div>
-        <p style="font-size: 12px; opacity: 0.5; margin-top: 20px;">Private. Local. Unlimited.</p>
-        <button onclick="unlockPro()" style="background:none; color:var(--primary); font-size:11px; margin-top:10px;">Have a Pro Key?</button>
+        <p style="font-size: 11px; opacity: 0.5; margin-top: 20px;">Multithreaded Local Conversion</p>
     </div>
 
     <div id="step2" class="step">
-        <h3 id="displayFileName" style="margin-bottom: 5px;">File Name</h3>
+        <h3 id="displayFileName" style="margin: 0 0 10px 0; font-size: 18px;">File Name</h3>
         
         <div class="stats-grid">
             <div class="stat-item"><b>Size:</b> <span id="statSize">-</span></div>
-            <div class="stat-item"><b>Type:</b> <span id="statType">-</span></div>
+            <div class="stat-item"><b>Format:</b> <span id="statType">-</span></div>
         </div>
 
+        <div id="warningBox"></div>
+
         <div style="text-align: left;">
-            <label style="font-size: 12px; opacity: 0.6;">RENAME FILE</label>
-            <input type="text" id="newFileName" placeholder="Enter new name...">
+            <label style="font-size: 11px; font-weight: bold; opacity: 0.6;">NEW FILE NAME</label>
+            <input type="text" id="newFileName" placeholder="Filename">
             
-            <label style="font-size: 12px; opacity: 0.6; margin-top: 15px; display: block;">CONVERT TO</label>
+            <label style="font-size: 11px; font-weight: bold; opacity: 0.6; margin-top: 15px; display: block;">TARGET FORMAT</label>
             <select id="targetFormat">
-                <option value="mp4">Video (MP4)</option>
-                <option value="mp3">Audio (MP3)</option>
-                <option value="png">Image (PNG)</option>
-                <option value="jpg">Image (JPG)</option>
-                <option value="gif">Animation (GIF)</option>
+                <optgroup label="Video/Animation">
+                    <option value="mp4">MP4 Video</option>
+                    <option value="gif">GIF Animation</option>
+                </optgroup>
+                <optgroup label="Audio">
+                    <option value="mp3">MP3 Audio</option>
+                    <option value="wav">WAV Lossless</option>
+                </optgroup>
+                <optgroup label="Images">
+                    <option value="png">PNG Image</option>
+                    <option value="jpg">JPG Image</option>
+                    <option value="webp">WebP Image</option>
+                </optgroup>
             </select>
         </div>
 
@@ -80,59 +89,56 @@
             <div class="progress-bar" id="progBar"></div>
         </div>
 
-        <button id="convertBtn">Start Conversion</button>
-        <button onclick="location.reload()" style="background:none; color:gray; font-size:12px;">Cancel</button>
+        <button id="convertBtn">Convert Now</button>
+        <button onclick="location.reload()" style="background:none; color:gray; font-size:12px; margin-top: 10px; border: none;">← Back</button>
     </div>
 </div>
 
 <script>
     const { createFFmpeg, fetchFile } = FFmpeg;
     const ffmpeg = createFFmpeg({ log: false });
-    let isPro = localStorage.getItem('isPro') === 'true';
     let selectedFile = null;
 
-    if (isPro) document.getElementById('proBadge').style.display = 'block';
-
-    // Theme Logic
+    // Theme Switcher
     function toggleTheme() {
-        if (!isPro) { alert("Dark Mode is a Pro feature!"); return; }
         document.body.classList.toggle('dark-theme');
-        localStorage.setItem('theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light');
     }
 
-    if (localStorage.getItem('theme') === 'dark' && isPro) document.body.classList.add('dark-theme');
+    // Load FFmpeg
+    (async () => {
+        try { if (!ffmpeg.isLoaded()) await ffmpeg.load(); } 
+        catch (e) { console.error(e); }
+    })();
 
-    // Pro Unlock
-    function unlockPro() {
-        const key = prompt("Enter Pro License Key:");
-        if (key === "DEV-MODE-2026") {
-            localStorage.setItem('isPro', 'true');
-            location.reload();
-        }
-    }
-
-    // File Selection
+    // File Selection logic
     document.getElementById('fileInput').addEventListener('change', (e) => {
         selectedFile = e.target.files[0];
         if (selectedFile) {
             document.getElementById('step1').classList.remove('active');
             document.getElementById('step2').classList.add('active');
             
-            // Populate Info
+            // Info Display
             document.getElementById('displayFileName').innerText = selectedFile.name;
             document.getElementById('statSize').innerText = (selectedFile.size / (1024*1024)).toFixed(2) + " MB";
-            document.getElementById('statType').innerText = selectedFile.type.split('/')[1].toUpperCase();
+            document.getElementById('statType').innerText = selectedFile.name.split('.').pop().toUpperCase();
             
-            // Pre-fill Rename Box
+            // Pre-fill Rename Box (strips old extension)
             const baseName = selectedFile.name.replace(/\.[^/.]+$/, "");
-            document.getElementById('newFileName').value = baseName + "_converted";
+            document.getElementById('newFileName').value = baseName + "_turbo";
+
+            if (selectedFile.size > 200 * 1024 * 1024) {
+                const warn = document.getElementById('warningBox');
+                warn.style.display = 'block';
+                warn.innerText = "⚠️ Large file detected. CPU multithreading enabled for speed.";
+            }
         }
     });
 
-    // Conversion Logic
+    // Main Conversion Engine
     document.getElementById('convertBtn').addEventListener('click', async () => {
         const target = document.getElementById('targetFormat').value;
-        const finalName = document.getElementById('newFileName').value + "." + target;
+        const customName = document.getElementById('newFileName').value || "converted";
+        const finalFullName = `${customName}.${target}`;
         
         document.getElementById('progCont').style.display = 'block';
         document.getElementById('convertBtn').disabled = true;
@@ -144,25 +150,27 @@
         });
 
         const inName = selectedFile.name;
+        
+        // Write to Virtual RAM
         ffmpeg.FS('writeFile', inName, await fetchFile(selectedFile));
 
-        // Use more threads if Pro
-        const args = isPro ? ['-threads', '4', '-i', inName, finalName] : ['-i', inName, finalName];
-        await ffmpeg.run(...args);
+        // RUN FFMPEG with -threads 4 for PRO speed
+        await ffmpeg.run('-threads', '4', '-i', inName, finalFullName);
 
-        const data = ffmpeg.FS('readFile', finalName);
+        // Read result and trigger download
+        const data = ffmpeg.FS('readFile', finalFullName);
         const url = URL.createObjectURL(new Blob([data.buffer]));
         
         const a = document.createElement('a');
         a.href = url;
-        a.download = finalName;
+        a.download = finalFullName;
         a.click();
 
-        // Cleanup
+        // CLEANUP RAM IMMEDIATELY
         ffmpeg.FS('unlink', inName);
-        ffmpeg.FS('unlink', finalName);
+        ffmpeg.FS('unlink', finalFullName);
         
-        alert("Done! File downloaded as " + finalName);
+        alert("Conversion Successful!");
         location.reload();
     });
 </script>
