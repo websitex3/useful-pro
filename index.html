@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TurboConvert PRO | Ultimate</title>
+    <title>TurboConvert PRO | Memory Shield</title>
     <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.0/dist/ffmpeg.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
-        :root { --bg: #080808; --card: #141414; --text: #ffffff; --border: #222; --primary: #00dc82; --error: #ff4d4d; }
+        :root { --bg: #080808; --card: #141414; --text: #ffffff; --border: #222; --primary: #00dc82; --error: #ff4d4d; --warning: #ffcc00; }
         body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
         .container { background: var(--card); padding: 30px; border-radius: 24px; width: 750px; border: 1px solid var(--border); position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
         .pro-label { position: absolute; top: 25px; right: 25px; font-size: 10px; font-weight: 900; color: var(--primary); border: 1.5px solid var(--primary); padding: 3px 10px; border-radius: 6px; letter-spacing: 2px; }
@@ -18,7 +18,7 @@
         .upload-box { border: 2px dashed #333; padding: 60px; border-radius: 20px; cursor: pointer; text-align: center; transition: 0.3s; background: #0f0f0f; }
         .upload-box:hover { border-color: var(--primary); background: #1a1a1a; }
 
-        #fileList { max-height: 350px; overflow-y: auto; margin: 20px 0; border-radius: 12px; border: 1px solid #222; background: #0a0a0a; }
+        #fileList { max-height: 300px; overflow-y: auto; margin: 20px 0; border-radius: 12px; border: 1px solid #222; background: #0a0a0a; }
         .file-row { display: grid; grid-template-columns: 1.2fr 80px 1fr 80px 40px; gap: 12px; align-items: center; padding: 12px; border-bottom: 1px solid #222; }
         
         select, input[type="text"], button { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); font-size: 13px; outline: none; background: #1a1a1a; color: white; box-sizing: border-box; }
@@ -27,13 +27,11 @@
 
         .source-badge { font-size: 9px; background: #222; color: #888; padding: 4px 6px; border-radius: 4px; text-align: center; font-weight: bold; border: 1px solid #333; }
         .btn-remove { background: rgba(255, 77, 77, 0.1); color: var(--error); border: 1px solid var(--error); cursor: pointer; font-weight: bold; }
-        .btn-remove:hover { background: var(--error); color: white; }
-
-        .batch-header { background: #1a1a1a; padding: 15px; border-radius: 12px; border: 1px solid #333; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .batch-footer { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 10px; margin-top: 15px; }
         
-        .checkbox-group { display: flex; gap: 20px; margin: 10px 0; font-size: 12px; color: #888; }
+        .batch-header { background: #1a1a1a; padding: 15px; border-radius: 12px; border: 1px solid #333; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .checkbox-group { display: flex; gap: 15px; margin: 10px 0; font-size: 11px; color: #888; flex-wrap: wrap; }
         .checkbox-group input { accent-color: var(--primary); }
+        .oom-alert { color: var(--warning); border-left: 2px solid var(--warning); padding-left: 10px; margin-top: 10px; font-size: 11px; }
 
         .progress-wrapper { margin-top: 20px; display: none; }
         .progress-bar { width: 0%; height: 6px; background: var(--primary); transition: 0.1s linear; border-radius: 10px; box-shadow: 0 0 10px var(--primary); }
@@ -48,7 +46,7 @@
         <h2 style="margin-top:0">TurboConvert</h2>
         <div class="upload-box" onclick="document.getElementById('fileInput').click()">
             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#00dc82" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            <p>Select Files to Convert</p>
+            <p>Batch Upload & Multi-Format</p>
             <input type="file" id="fileInput" multiple style="display:none">
         </div>
     </div>
@@ -56,31 +54,36 @@
     <div id="step2" class="step">
         <div class="batch-header">
             <div style="flex: 1;">
-                <label style="font-size: 10px; color: var(--primary); font-weight: bold; letter-spacing: 1px;">SET ALL TO:</label>
+                <label style="font-size: 10px; color: var(--primary); font-weight: bold;">SET ALL TO:</label>
                 <select id="masterSelector" onchange="syncAllFormats(this.value)" style="border-color: #444; margin-top: 5px;">
                     <option value="custom" disabled selected>-- Multiple Formats --</option>
                 </select>
             </div>
             <div style="text-align: right; margin-left: 20px;">
                 <div id="totalSize" style="font-size: 14px; font-weight: bold;">0.00 MB</div>
-                <div style="font-size: 10px; color: #666;">TOTAL BATCH SIZE</div>
+                <div style="font-size: 10px; color: #666;">BATCH SIZE</div>
             </div>
         </div>
         
         <div id="fileList"></div>
 
         <div class="checkbox-group">
-            <label title="Downloads one ZIP instead of many files"><input type="checkbox" id="zipMode"> Bundle as .ZIP</label>
+            <label><input type="checkbox" id="zipMode"> Bundle as .ZIP</label>
             <label><input type="checkbox" id="folderMode"> Folder Mode</label>
+            <label style="color:var(--warning)" title="Essential for files over 500MB"><input type="checkbox" id="safeMode" checked> Memory Safe Mode (Slow)</label>
+        </div>
+
+        <div id="memWarning" class="oom-alert" style="display:none;">
+            Large file detected. Safety mode enabled to prevent crashes.
         </div>
 
         <div class="progress-wrapper" id="progWrapper">
-            <div id="statusMsg" style="font-size: 11px; text-align: center; margin-bottom: 5px; color: var(--primary);">Initialising FFmpeg Core...</div>
+            <div id="statusMsg" style="font-size: 11px; text-align: center; margin-bottom: 5px; color: var(--primary);">Ready...</div>
             <div style="background:#222; border-radius: 10px;"><div class="progress-bar" id="progBar"></div></div>
         </div>
 
-        <div class="batch-footer">
-            <button id="startBtn">START BATCH CONVERSION</button>
+        <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 10px; margin-top: 15px;">
+            <button id="startBtn">CONVERT ALL</button>
             <button onclick="location.reload()" style="background:none; color:#555; border:1px solid #333;">CANCEL</button>
         </div>
     </div>
@@ -88,7 +91,7 @@
 
 <script>
     const { createFFmpeg, fetchFile } = FFmpeg;
-    const ffmpeg = createFFmpeg({ log: false });
+    let ffmpeg = createFFmpeg({ log: false });
     let queue = [];
     let currentFileRatio = 0;
 
@@ -112,16 +115,13 @@
 
     document.getElementById('fileInput').addEventListener('change', (e) => {
         const files = Array.from(e.target.files);
+        let total = 0;
         files.forEach((file, idx) => {
             const ext = file.name.split('.').pop().toUpperCase();
-            queue.push({
-                file,
-                id: Date.now() + idx + Math.random(),
-                newName: file.name.replace(/\.[^/.]+$/, ""),
-                format: 'mp4',
-                sourceExt: ext
-            });
+            total += file.size;
+            queue.push({ file, id: Date.now()+idx+Math.random(), newName: file.name.replace(/\.[^/.]+$/, ""), format: 'mp4', sourceExt: ext });
         });
+        if(total > 300 * 1024 * 1024) document.getElementById('memWarning').style.display = 'block';
         document.getElementById('step1').classList.remove('active');
         document.getElementById('step2').classList.add('active');
         renderQueue();
@@ -131,86 +131,61 @@
         const list = document.getElementById('fileList');
         let total = 0;
         if (queue.length === 0) { location.reload(); return; }
-
         list.innerHTML = queue.map(item => {
             total += item.file.size;
-            return `
-            <div class="file-row">
+            return `<div class="file-row">
                 <input type="text" value="${item.newName}" oninput="updateItem(${item.id}, 'newName', this.value)">
-                <div class="source-badge">FROM ${item.sourceExt}</div>
+                <div class="source-badge">${item.sourceExt}</div>
                 <select onchange="updateIndividualFormat(${item.id}, this.value)" class="row-format">
                     ${generateOptionsHTML().replace(`value="${item.format}"`, `value="${item.format}" selected`)}
                 </select>
-                <span style="font-size:11px; color:#555; text-align:right;">${(item.file.size/1024/1024).toFixed(1)} MB</span>
+                <span style="font-size:11px; color:#555; text-align:right;">${(item.file.size/1024/1024).toFixed(1)}MB</span>
                 <button class="btn-remove" onclick="removeItem(${item.id})">×</button>
             </div>`;
         }).join('');
-
         document.getElementById('totalSize').innerText = (total / 1024 / 1024).toFixed(2) + " MB";
     }
 
-    function removeItem(id) {
-        queue = queue.filter(i => i.id !== id);
-        renderQueue();
-    }
-
-    function updateItem(id, key, value) {
-        const item = queue.find(i => i.id === id);
-        if (item) item[key] = value;
-    }
-
-    function updateIndividualFormat(id, value) {
-        updateItem(id, 'format', value);
-        document.getElementById('masterSelector').value = "custom";
-    }
-
-    function syncAllFormats(val) {
-        queue.forEach(item => item.format = val);
-        document.querySelectorAll('.row-format').forEach(sel => sel.value = val);
-    }
+    function removeItem(id) { queue = queue.filter(i => i.id !== id); renderQueue(); }
+    function updateItem(id, key, value) { const item = queue.find(i => i.id === id); if (item) item[key] = value; }
+    function updateIndividualFormat(id, value) { updateItem(id, 'format', value); document.getElementById('masterSelector').value = "custom"; }
+    function syncAllFormats(val) { queue.forEach(item => item.format = val); document.querySelectorAll('.row-format').forEach(sel => sel.value = val); }
 
     async function startConversion() {
         document.getElementById('progWrapper').style.display = 'block';
         document.getElementById('startBtn').disabled = true;
         const zip = new JSZip();
         const useZip = document.getElementById('zipMode').checked;
+        const safeMode = document.getElementById('safeMode').checked;
 
-        if (!ffmpeg.isLoaded()) await ffmpeg.load();
+        for (let i = 0; i < queue.length; i++) {
+            // RECYCLE ENGINE: Exit and reload to purge RAM entirely
+            if (ffmpeg.isLoaded()) { try { ffmpeg.exit(); } catch(e){} }
+            ffmpeg = createFFmpeg({ log: false });
+            await ffmpeg.load();
 
-        // Fluid Progress Hook
-        ffmpeg.setProgress(({ ratio }) => {
-            currentFileRatio = ratio;
-            updateProgressBar(currentIdx);
-        });
+            ffmpeg.setProgress(({ ratio }) => { currentFileRatio = ratio; updateProgressBar(i); });
 
-        let currentIdx = 0;
-        for (currentIdx = 0; currentIdx < queue.length; currentIdx++) {
-            const item = queue[currentIdx];
+            const item = queue[i];
             const outName = `${item.newName}.${item.format}`;
-            document.getElementById('statusMsg').innerText = `Step ${currentIdx+1}/${queue.length}: Processing ${item.file.name}...`;
+            document.getElementById('statusMsg').innerText = `(${i+1}/${queue.length}) Shuffling memory for ${item.file.name}...`;
             
-            // Memory Management: Clear FS before writing new large file
+            // Aggressive FS cleaning
             try { ffmpeg.FS('unlink', item.file.name); } catch(e){}
 
             ffmpeg.FS('writeFile', item.file.name, await fetchFile(item.file));
             
-            // OOM Prevention: Use slower but safer memory profile for large files
-            const isLarge = item.file.size > 200 * 1024 * 1024;
-            const args = isLarge 
-                ? ['-i', item.file.name, '-preset', 'ultrafast', '-threads', '2', outName]
-                : ['-threads', '4', '-i', item.file.name, outName];
+            // Safe Mode Logic: Prioritize RAM over speed
+            const args = safeMode 
+                ? ['-i', item.file.name, '-threads', '1', '-preset', 'ultrafast', outName]
+                : ['-i', item.file.name, '-threads', '4', outName];
 
             await ffmpeg.run(...args);
-            
             const data = ffmpeg.FS('readFile', outName);
             
-            if (useZip) {
-                zip.file(outName, data);
-            } else {
-                download(data, outName);
-            }
+            if (useZip) { zip.file(outName, data); } else { download(data, outName); }
 
-            // Forced Garbage Collection
+            // Post-run shredding
             ffmpeg.FS('unlink', item.file.name);
             ffmpeg.FS('unlink', outName);
         }
@@ -218,7 +193,7 @@
         if (useZip) {
             document.getElementById('statusMsg').innerText = "Bundling ZIP...";
             const content = await zip.generateAsync({type:"blob"});
-            download(content, "TurboBatch_Pro.zip");
+            download(content, "TurboBatch_Export.zip");
         }
 
         document.getElementById('statusMsg').innerText = "All Complete!";
@@ -226,11 +201,8 @@
     }
 
     function updateProgressBar(idx) {
-        // Math: (Completed Files / Total) + (Current File Progress / Total)
-        const totalFiles = queue.length;
-        const baseProgress = (idx / totalFiles) * 100;
-        const currentFileProgress = (currentFileRatio / totalFiles) * 100;
-        const finalWidth = baseProgress + currentFileProgress;
+        const total = queue.length;
+        const finalWidth = ((idx / total) * 100) + ((currentFileRatio / total) * 100);
         document.getElementById('progBar').style.width = finalWidth + '%';
     }
 
@@ -239,9 +211,7 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url; a.download = name; a.click();
-        
-        // Memory Fix: Immediately free the Blob URL from browser RAM
-        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        setTimeout(() => URL.revokeObjectURL(url), 50); // Instant revocation
     }
 
     document.getElementById('startBtn').onclick = startConversion;
